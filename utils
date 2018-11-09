@@ -1,0 +1,66 @@
+# -*- coding:UTF-8 -*-
+"""   
+Collect some function tools written by myself.
+"""
+
+import psutil
+import datetime
+import socket
+
+
+# acquire ip address
+def get_ip_address(ifname):     # ifname is the nic name
+    info = psutil.net_if_addrs()
+    for k, v in info.items():
+        if k == ifname:
+            for item in v:
+                if item[0] == 2:
+                    return item[1]
+    return None
+
+
+# acquire hostname
+def get_hostname():
+    return socket.gethostname()
+    
+
+# acquire boot time
+def get_boot_time():
+    return datetime.datetime.fromtimestamp(psutil.boot_time()).strftime('%Y-%m-%d %H:%M')
+    
+# acquire running time
+def get_up_time():
+    boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
+    local_time = time.strftime("%Y-%m-%d %H:%M:%S")
+    m, s = divmod(time.time() - psutil.boot_time(), 60)
+    h, m = divmod(m, 60)
+    running_time = ("%d:%02d:%02d" % (h, m, s))
+    return running_time
+
+# acquire curent time
+def get_current_time():
+    return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')) 
+    
+
+# Let the command "Ctrl c" invalid while process running
+def ignore_signals():
+    sig_list = (
+        signal.SIGINT,
+        signal.SIGHUP,
+        signal.SIGTSTP,
+        signal.SIGQUIT,
+        signal.SIGABRT,
+        signal.SIGPIPE,
+        signal.SIGALRM,
+        signal.SIGTERM
+    )
+    for sig in sig_list:
+        signal.signal(sig, signal.SIG_IGN)
+    return
+    
+#acquire cpu usage
+def get_cpu_mm_usage():
+    cpu_usage = psutil.cpu_percent(interval=1)
+    vm = psutil.virtual_memory()
+    swap = psutil.swap_memory()
+    return cpu_usage, vm, swap
