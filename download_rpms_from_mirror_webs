@@ -1,0 +1,17 @@
+# 获取目标网页中需要下载的包名
+f = open('/opt/index.html')
+url_1 = []
+res = []
+# 从网页中将包名提取出来
+for line in f.readlines():
+    if line.startswith('<a href'):
+        url_1.append(line.split('"')[1])
+# 组装并下载
+for j in url_1:
+    subprocess.call("wget https://mirrors.aliyun.com/centos/7.6.1810/cloud/x86_64/openstack-rocky/"+j, shell=True)
+# 检查是否有遗漏的包，如果有的话将其打印出来
+url_2 = os.listdir('/opt/rpms')
+for i in url_1:
+    if i not in url_2:
+        res.append(i)
+print(res)
